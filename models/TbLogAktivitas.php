@@ -11,6 +11,52 @@ class TbLogAktivitas
         $this->pdo = $pdo;
     }
 
+    public function table(
+        int $start,
+        int $length,
+        ?string $search = null
+    ): array {
+        $sql = "
+            SELECT t.*, tu.*
+            FROM {$this->table} t
+            JOIN tb_user tu ON tu.id_user = t.id_user
+            WHERE 1=1
+        ";
+
+        $params = [];
+
+        if ($search) {
+            $sql .= " AND username LIKE :search";
+            $params['search'] = "%{$search}%";
+        }
+
+        $sql .= " LIMIT :length OFFSET :start";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        // Bind manual karena LIMIT & OFFSET harus INT
+        foreach ($params as $key => $val) {
+            $stmt->bindValue(":{$key}", $val);
+        }
+
+        $stmt->bindValue(':length', $length, PDO::PARAM_INT);
+        $stmt->bindValue(':start', $start, PDO::PARAM_INT);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function count(): int
+    {
+        // Prepare SQL for pagination
+        $sql = "SELECT COUNT(*) AS total FROM {$this->table}";
+        $stmt = $this->pdo->prepare($sql);
+        
+        $stmt->execute();
+        return (int) $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+    }
+
     // Insert log aktivitas
     public function create(array $data): int
     {
@@ -24,25 +70,5 @@ class TbLogAktivitas
 
         // Return inserted ID
         return (int) $this->pdo->lastInsertId();
-    }
-
-    // Find log by ID
-    public function find(int $idLog): array|false
-    {
-        $sql = "SELECT * FROM {$this->table} WHERE id_log = :id_log";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute(['id_log' => $idLog]);
-
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    // Get logs by user
-    public function findByUser(int $idUser): array
-    {
-        $sql = "SELECT * FROM {$this->table} WHERE id_user = :id_user ORDER BY waktu_aktivitas DESC";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute(['id_user' => $idUser]);
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

@@ -17,29 +17,25 @@
             <div class="card-header pb-0">
               <div class="row">
                 <div class="col-md-6">
-                  <h6 class="mb-0">Kendaraan Terparkir</h6>
-                </div>
-                <div class="col-md-6 d-flex justify-content-end align-items-center">
-                  <i class="far fa-calendar-alt me-2"></i>
-                  <small>23 - 30 March 2020</small>
+                  <h6 class="mb-0">Struk</h6>
                 </div>
               </div>
             </div>
             <div class="card-body mt-2 pb-2">
               <form method="POST" action="./update">
-                <input type="hidden" name="id_parkir" value="<?= $data['id_parkir']; ?>" readonly>
+                <input type="hidden" name="id_parkir" value=<?= $data['id_parkir']; ?> readonly>
 
                 <div class="form-group">
                   <label for="input-tanggal-masuk" class="form-control-label">Tanggal Masuk</label>
-                  <input class="form-control" type="date" name="tanggal_masuk" value="<?= $data['tanggal_masuk']; ?>" id="input-tanggal-masuk" readonly>
+                  <input class="form-control" type="date" name="tanggal_masuk" value=<?= $data['tanggal_masuk']; ?> id="input-tanggal-masuk" readonly>
                 </div>
                 <div class="form-group">
                     <label for="input-waktu-masuk" class="form-control-label">Waktu Masuk</label>
-                    <input class="form-control" type="time" name="waktu_masuk" value="<?= $data['waktu_masuk'] ?>" id="input-waktu-masuk" readonly>
+                    <input class="form-control" type="time" name="waktu_masuk" value=<?= $data['waktu_masuk'] ?> id="input-waktu-masuk" readonly>
                 </div>
                 <div class="form-group">
                   <label for="input-plat-nomor" class="form-control-label">Plat Nomor</label>
-                  <input class="form-control" type="text" name="plat_nomor" value="<?= $data['plat_nomor']; ?>" id="input-plat-nomor" readonly>
+                  <input class="form-control" type="text" name="plat_nomor" value=<?= $data['plat_nomor']; ?> id="input-plat-nomor" readonly>
                 </div>
                 <div class="form-group">
                   <label for="input-area-parkir" class="form-control-label">Area Parkir</label>
@@ -62,20 +58,20 @@
                 </div>
                 <div class="form-group">
                   <label for="input-pemilik" class="form-control-label">Pemilik</label>
-                  <input class="form-control" type="text" name="pemilik" value="<?= $data['pemilik']; ?>" id="input-pemilik" readonly>
+                  <input class="form-control" type="text" name="pemilik" value=<?= $data['pemilik']; ?> id="input-pemilik" readonly>
                 </div>
                 <div class="form-group">
                   <label for="input-tanggal-keluar" class="form-control-label">Tanggal Keluar</label>
-                  <input class="form-control" type="date" name="tanggal_keluar" value="<?= $data['tanggal_keluar']; ?>" id="input-tanggal-keluar" readonly>
+                  <input class="form-control" type="date" name="tanggal_keluar" value=<?= $data['tanggal_keluar']; ?> id="input-tanggal-keluar" readonly>
                 </div>
                 <div class="form-group">
                     <label for="input-waktu-keluar" class="form-control-label">Waktu Keluar</label>
-                    <input class="form-control" type="time" name="waktu_keluar" value="<?= $data['waktu_keluar'] ?>" id="input-waktu-keluar" readonly>
+                    <input class="form-control" type="time" name="waktu_keluar" value=<?= $data['waktu_keluar'] ?> id="input-waktu-keluar" readonly>
                 </div>
                 <div class="form-group">
                   <label for="input-durasi" class="form-control-label">Durasi</label>
                   <div class="input-group">
-                    <input class="form-control" type="text" name="durasi" value="<?= $data['raw_total_durasi']; ?>" id="input-durasi" readonly>
+                    <input class="form-control" type="text" name="durasi" value=<?= $data['raw_total_durasi']; ?> id="input-durasi" readonly>
                     <span class="input-group-text group-text-right end-0">Jam</span>
                   </div>
                 </div>
@@ -83,14 +79,10 @@
                   <label for="input-biaya-total" class="form-control-label">Biaya Total</label>
                   <div class="input-group">
                     <span class="input-group-text">Rp</span>
-                    <input class="form-control ps-2" type="text" name="biaya_total" value="<?= $data['raw_total_biaya']; ?>" id="input-biaya-total" readonly>
+                    <input class="form-control ps-2" type="text" name="biaya_total" value=<?= $data['raw_total_biaya']; ?> id="input-biaya-total" readonly>
                   </div>
                 </div>
                 <div class="mt-4">
-                  <?php if(!$data['selesai']) {
-                    echo '<button type="submit" class="btn btn-primary btn-sms">Selesai</button>';
-                  } ?>
-
                   <a href="./" class="btn btn-secondary btn-sm">Kembali</a>
                 </div>
             </form>

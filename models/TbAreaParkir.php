@@ -21,32 +21,65 @@ class TbAreaParkir
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Get paginated data
-    public function paginate(int $limit, int $offset): array
-    {
-        // Prepare SQL for pagination
-        $sql = "SELECT * FROM {$this->table} LIMIT :limit OFFSET :offset";
+    public function table(
+        int $start,
+        int $length,
+        ?string $search = null
+    ): array {
+        $sql = "
+            SELECT 
+                id_area, 
+                nama_area, 
+                kapasitas, 
+                terisi,
+                (kapasitas - terisi) AS sisa
+            FROM {$this->table}
+            WHERE 1=1
+        ";
+
+        $params = [];
+
+        if ($search) {
+            $sql .= " AND nama_area LIKE :search";
+            $params['search'] = "%{$search}%";
+        }
+
+        $sql .= " LIMIT :length OFFSET :start";
+
         $stmt = $this->pdo->prepare($sql);
 
-        // Bind parameters safely
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        // Bind manual karena LIMIT & OFFSET harus INT
+        foreach ($params as $key => $val) {
+            $stmt->bindValue(":{$key}", $val);
+        }
+
+        $stmt->bindValue(':length', $length, PDO::PARAM_INT);
+        $stmt->bindValue(':start', $start, PDO::PARAM_INT);
 
         $stmt->execute();
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Find record by ID
+    public function count(): int
+    {
+        // Prepare SQL for pagination
+        $sql = "SELECT COUNT(*) AS total FROM {$this->table}";
+        $stmt = $this->pdo->prepare($sql);
+        
+        $stmt->execute();
+        return (int) $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+    }
+
     public function find(int $id): array|false
     {
-        $sql = "SELECT * FROM {$this->table} WHERE id = :id";
+        $sql = "SELECT * FROM {$this->table} WHERE id_area = :id";
         $stmt = $this->pdo->prepare($sql);
 
         $stmt->execute(['id' => $id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Insert new record
     public function create(array $data): bool
     {
         // Build SQL dynamically
@@ -59,7 +92,6 @@ class TbAreaParkir
         return $stmt->execute($data);
     }
 
-    // Update existing record
     public function update(int $id, array $data): bool
     {
         // Build SET clause dynamically
@@ -68,19 +100,48 @@ class TbAreaParkir
             $set[] = "$key = :$key";
         }
 
-        $sql = "UPDATE {$this->table} SET " . implode(',', $set) . " WHERE id = :id";
+        $sql = "UPDATE {$this->table} SET " . implode(',', $set) . " WHERE id_area = :id";
         $stmt = $this->pdo->prepare($sql);
 
         $data['id'] = $id;
         return $stmt->execute($data);
     }
 
-    // Delete record
     public function delete(int $id): bool
     {
-        $sql = "DELETE FROM {$this->table} WHERE id = :id";
+        $sql = "DELETE FROM {$this->table} WHERE id_area = :id";
         $stmt = $this->pdo->prepare($sql);
 
         return $stmt->execute(['id' => $id]);
+    }
+
+    public function isiParkir(int $idArea): bool
+    {
+        $sql = "
+            UPDATE tb_area_parkir
+            SET terisi = terisi + 1
+            WHERE id_area = :id_area
+            AND terisi < kapasitas
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            'id_area' => $idArea
+        ]);
+    }
+
+    public function kurangiParkir(int $idArea): bool
+    {
+        $sql = "
+            UPDATE tb_area_parkir
+            SET terisi = terisi - 1
+            WHERE id_area = :id_area
+            AND terisi > 0
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            'id_area' => $idArea
+        ]);
     }
 }

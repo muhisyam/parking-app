@@ -2,7 +2,7 @@
 
 // Create a PDO database connection
 $host = 'localhost';
-$db   = 'personal_parkir';
+$db   = 'project_parking_php';
 $user = 'root';
 $pass = '';
 

@@ -1,17 +1,20 @@
 <?php
 
-require_once __DIR__ . '/../models/TbAreaParkir.php';
+require_once __DIR__ . '/../models/TbKendaraan.php';
+require_once __DIR__ . '/../models/TbUser.php';
 
-class TbAreaParkirController
+class TbKendaraanController
 {
-    private TbAreaParkir $model;
+    private TbKendaraan $kendaraan;
+    private TbUser $user;
     private string $moduleUrl;
 
     public function __construct(PDO $pdo)
     {
         // Inject model with database connection
-        $this->model     = new TbAreaParkir($pdo);
-        $this->moduleUrl = 'area-parkir';
+        $this->kendaraan = new TbKendaraan($pdo);
+        $this->user      = new TbUser($pdo);
+        $this->moduleUrl = 'kendaraan';
     }
 
     public function index(): void
@@ -26,8 +29,8 @@ class TbAreaParkirController
         $start  = $_GET['start'] ?? 0;
         $length = $_GET['length'] ?? 10;
 
-        $data  = $this->model->table($start, $length);
-        $total = $this->model->count();
+        $data  = $this->kendaraan->table($start, $length);
+        $total = $this->kendaraan->count();
 
         echo json_encode([
             'draw'            => (int) $draw,
@@ -41,6 +44,8 @@ class TbAreaParkirController
 
     public function create(): void
     {
+        $listUser = $this->user->master();
+
         // Render
         include sprintf("%s/views/%s/create.php", BASE_PATH, $this->moduleUrl);
     }
@@ -54,11 +59,8 @@ class TbAreaParkirController
 
     public function store(): void
     {
-        // Default data column 'terisi'
-        $_POST['terisi'] = 0;
-
         $this->validation();
-        $this->model->create($_POST);
+        $this->kendaraan->create($_POST);
 
         // Redirect
         header('Location: ' . sprintf('%s/%s', BASE_URL, $this->moduleUrl));
@@ -69,7 +71,8 @@ class TbAreaParkirController
 
     public function show(): void
     {
-        $data = $this->model->find($_GET['id']);
+        $listUser = $this->user->master();
+        $data     = $this->kendaraan->find($_GET['id']);
 
         // Render
         include sprintf("%s/views/%s/update.php", BASE_PATH, $this->moduleUrl);
@@ -80,7 +83,7 @@ class TbAreaParkirController
     public function update(): void
     {
         $this->validation();
-        $this->model->update($_POST['id_area'], $_POST);
+        $this->kendaraan->update($_POST['id_kendaraan'], $_POST);
 
         // Redirect
         header('Location: ' . sprintf('%s/%s', BASE_URL, $this->moduleUrl));
@@ -91,8 +94,8 @@ class TbAreaParkirController
 
     public function destroy(): void
     {
-        $this->model->delete($_GET['id']);
-        
+        $this->kendaraan->delete($_GET['id']);
+
         // Redirect
         header('Location: ' . sprintf('%s/%s', BASE_URL, $this->moduleUrl));
         exit;

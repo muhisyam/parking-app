@@ -1,15 +1,18 @@
 <?php
 
 require_once __DIR__ . '/../models/TbUser.php';
+require_once __DIR__ . '/../models/TbLogAktivitas.php';
 
 class AuthController
 {
-    private TbUser $model;
+    private TbUser $user;
+    private TbLogAktivitas $log;
 
     public function __construct(PDO $pdo)
     {
         // Inject model with database connection
-        $this->model = new TbUser($pdo);
+        $this->user = new TbUser($pdo);
+        $this->log  = new TbLogAktivitas($pdo);
     }
 
     public function loginForm()
@@ -29,7 +32,7 @@ class AuthController
         
         $username = trim($_POST['username']);
         $password = $_POST['password'];
-        $user     = $this->model->find($username);
+        $user     = $this->user->find($username);
 
         // Check user & password
         if (!$user || ($password != $user['password'])) {
@@ -52,8 +55,14 @@ class AuthController
             'username'     => $user['username'],
             'role'         => $user['role'],
         ];
+
+        $this->log->create([
+            'id_user'          => $user['id_user'],
+            'aktivitas'        => "Login",
+            'waktu_aktivitas' => date("Y-m-d H:i:s"),
+        ]);
         
-        header('Location: ' . BASE_URL . '/parkir/create');
+        header('Location: ' . BASE_URL . '/parkir');
         exit;
     }
 
@@ -81,7 +90,7 @@ class AuthController
         $username = trim($_POST['username']);
         $password = $_POST['password'];
         $role     = $_POST['role'];
-        $user     = $this->model->find($username);
+        $user     = $this->user->find($username);
 
         if (!empty($user)) {
             $_SESSION['error'] = 'Username sudah digunakan';
@@ -90,18 +99,36 @@ class AuthController
         }
 
         // Register
-        $this->model->create([
+        $this->user->create([
             'nama_lengkap' => $nama,
             'username'     => $username,
             'password'     => $password,
             'role'         => $role,
         ]);
 
-        header('Location: ' . BASE_URL . '/parkir/create');
+        $this->log->create([
+            'id_user'          => $user['id_user'],
+            'aktivitas'        => "Login",
+            'waktu_aktivitas' => date("Y-m-d H:i:s"),
+        ]);
+
+        header('Location: ' . BASE_URL . '/parkir');
         exit;
     }
 
-    private function addLog($username, $action)
+    public function logout()
     {
+        $user = $_SESSION['auth'];
+
+        $this->log->create([
+            'id_user'          => $user['id_user'],
+            'aktivitas'        => "Logout",
+            'waktu_aktivitas' => date("Y-m-d H:i:s"),
+        ]);
+
+        unset($_SESSION['auth']);
+
+        header('Location: ' . BASE_URL . '/auth/login');
+        exit;
     }
 }

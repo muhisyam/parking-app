@@ -29,11 +29,11 @@
               <form method="POST" action="./store">
                 <div class="form-group">
                   <label for="input-tanggal-masuk" class="form-control-label">Tanggal Masuk</label>
-                  <input class="form-control" type="date" name="tanggal_masuk" value=<?= date('Y-m-d'); ?> id="input-tanggal-masuk">
+                  <input class="form-control" type="date" name="tanggal_masuk" value="<?= date('Y-m-d'); ?>" id="input-tanggal-masuk">
                 </div>
                 <div class="form-group">
-                    <label for="input-waktu-masuk" class="form-control-label">Waktu Masuk</label>
-                    <input class="form-control" type="time" name="waktu_masuk" value=<?= date('H:i:s'); ?> id="input-waktu-masuk">
+                  <label for="input-waktu-masuk" class="form-control-label">Waktu Masuk</label>
+                  <input class="form-control" type="time" name="waktu_masuk" value="<?= date('H:i:s'); ?>" id="input-waktu-masuk">
                 </div>
                 <div class="form-group">
                   <label for="input-plat-nomor" class="form-control-label">Plat Nomor</label>
@@ -52,10 +52,11 @@
                   </select>
                 </div>
                 <div class="mt-4">
-                  <button type="submit" class="btn btn-primary btn-sms">Simpan</button>
-                  <button type="button" class="btn btn-secondary btn-sms">Kembali</button>
+                  <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
+                  <a href="./" class="btn btn-secondary btn-sm">Kembali</a>
                 </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       </div>

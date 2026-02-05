@@ -1,17 +1,17 @@
 <?php
 
-require_once __DIR__ . '/../models/TbAreaParkir.php';
+require_once __DIR__ . '/../models/TbTarif.php';
 
-class TbAreaParkirController
+class TbTarifController
 {
-    private TbAreaParkir $model;
+    private TbTarif $model;
     private string $moduleUrl;
 
     public function __construct(PDO $pdo)
     {
         // Inject model with database connection
-        $this->model     = new TbAreaParkir($pdo);
-        $this->moduleUrl = 'area-parkir';
+        $this->model     = new TbTarif($pdo);
+        $this->moduleUrl = 'tarif';
     }
 
     public function index(): void
@@ -54,9 +54,6 @@ class TbAreaParkirController
 
     public function store(): void
     {
-        // Default data column 'terisi'
-        $_POST['terisi'] = 0;
-
         $this->validation();
         $this->model->create($_POST);
 
@@ -80,7 +77,7 @@ class TbAreaParkirController
     public function update(): void
     {
         $this->validation();
-        $this->model->update($_POST['id_area'], $_POST);
+        $this->model->update($_POST['id_tarif'], $_POST);
 
         // Redirect
         header('Location: ' . sprintf('%s/%s', BASE_URL, $this->moduleUrl));
@@ -92,7 +89,7 @@ class TbAreaParkirController
     public function destroy(): void
     {
         $this->model->delete($_GET['id']);
-        
+
         // Redirect
         header('Location: ' . sprintf('%s/%s', BASE_URL, $this->moduleUrl));
         exit;

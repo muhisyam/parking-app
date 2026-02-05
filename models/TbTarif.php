@@ -10,6 +10,36 @@ class TbTarif
         $this->pdo = $pdo;
     }
 
+    public function table(
+        int $start,
+        int $length,
+    ): array {
+        $sql = "
+            SELECT id_tarif, jenis_kendaraan, tarif_per_jam
+            FROM {$this->table}
+            WHERE 1=1
+        ";
+
+        $sql .= " LIMIT :length OFFSET :start";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':length', $length, PDO::PARAM_INT);
+        $stmt->bindValue(':start', $start, PDO::PARAM_INT);
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function count(): int
+    {
+        // Prepare SQL for pagination
+        $sql = "SELECT COUNT(*) AS total FROM {$this->table}";
+        $stmt = $this->pdo->prepare($sql);
+        
+        $stmt->execute();
+        return (int) $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+    }
+
     // Create tarif
     public function create(array $data): int
     {
@@ -24,11 +54,11 @@ class TbTarif
     }
 
     // Find tarif by ID
-    public function find(int $idTarif): array|false
+    public function find(int $id): array|false
     {
-        $sql = "SELECT * FROM {$this->table} WHERE id_tarif = :id_tarif";
+        $sql = "SELECT * FROM {$this->table} WHERE id_tarif = :id";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute(['id_tarif' => $idTarif]);
+        $stmt->execute(['id' => $id]);
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
@@ -41,5 +71,29 @@ class TbTarif
         $stmt->execute(['jenis' => $jenis]);
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Update kendaraan
+    public function update(int $id, array $data): bool
+    {
+        $set = [];
+        foreach ($data as $key => $value) {
+            $set[] = "$key = :$key";
+        }
+
+        $sql = "UPDATE {$this->table} SET " . implode(', ', $set) . " WHERE id_tarif = :id";
+        $stmt = $this->pdo->prepare($sql);
+
+        $data['id'] = $id;
+        return $stmt->execute($data);
+    }
+
+    // Delete kendaraan
+    public function delete(int $id): bool
+    {
+        $sql = "DELETE FROM {$this->table} WHERE id_tarif = :id";
+        $stmt = $this->pdo->prepare($sql);
+
+        return $stmt->execute(['id' => $id]);
     }
 }
