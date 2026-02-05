@@ -14,7 +14,9 @@
       <div class="row ">
         <div class="row col-12">
           <div class="col-6 mt-auto">
-            <a href="./parkir/create" class="btn btn-primary">Tambah</a>
+            <?php if ($_SESSION['auth']['role'] == 'petugas') {
+              echo '<a href="./parkir/create" class="btn btn-primary">Tambah</a>';
+            } ?>
           </div>
           <div class="col-6">
             <form id="filter-parkir" class="row">
@@ -200,7 +202,6 @@
             searchable: false,
             render: function (data, type, row) {
 
-              // 👉 KHUSUS OWNER
               if (AUTH_ROLE === 'owner') {
                 return `
                   <div class="ps-5">
@@ -212,7 +213,6 @@
                 `;
               }
 
-              // 👉 ROLE SELAIN OWNER
               let btnStruk = '';
 
               if (row.status === 'keluar') {
