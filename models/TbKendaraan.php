@@ -25,6 +25,15 @@ class TbKendaraan
     }
 
     // Find kendaraan by ID
+    public function findByPlat(string $plat): array|false
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE plat_nomor = :plat";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['plat' => $plat]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function find(int $id): array|false
     {
         $sql = "SELECT * FROM {$this->table} WHERE id = :id";

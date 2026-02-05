@@ -14,8 +14,14 @@ class TbAreaParkirController
 
     public function test()
     {
-        print_r("asd");
-        exit;
+        // Data array dari database / logic
+        $areas = [
+            ['id' => 1, 'nama' => 'Area A'],
+            ['id' => 2, 'nama' => 'Area B'],
+        ];
+
+        // Render view
+        include BASE_PATH . '/views/parkir/form.php';
     }
 
     // GET /area-parkir

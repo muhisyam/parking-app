@@ -1,0 +1,6 @@
+RewriteEngine On
+
+# Jika file / folder tidak ada, teruskan ke public
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ public/$0 [L]

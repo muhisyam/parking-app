@@ -11,6 +11,16 @@ class TbAreaParkir
         $this->pdo = $pdo;
     }
 
+    public function master(): array
+    {
+        // Prepare SQL for pagination
+        $sql = "SELECT * FROM {$this->table}";
+        $stmt = $this->pdo->prepare($sql);
+        
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     // Get paginated data
     public function paginate(int $limit, int $offset): array
     {

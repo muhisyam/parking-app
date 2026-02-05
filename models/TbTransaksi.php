@@ -34,12 +34,14 @@ class TbTransaksi
     }
 
     // Get transaksi + tarif (replacement for belongsTo)
-    public function findWithTarif(int $idParkir): array|false
+    public function findFull(int $idParkir): array|false
     {
         $sql = "
-            SELECT t.*, tr.jenis_kendaraan, tr.tarif_per_jam
+            SELECT t.*, tr.*, tk.*, tu.*
             FROM tb_transaksi t
+            JOIN tb_kendaraan tk ON tk.id_kendaraan = t.id_kendaraan
             JOIN tb_tarif tr ON tr.id_tarif = t.id_tarif
+            JOIN tb_user tu ON tu.id_user = t.id_user
             WHERE t.id_parkir = :id_parkir
         ";
 
@@ -62,5 +64,27 @@ class TbTransaksi
 
         $data['id_parkir'] = $idParkir;
         return $stmt->execute($data);
+    }
+
+    public function findRekapByDate(string $from, string $to, string|null $userId = null): array
+    {
+        $sql = "
+            SELECT t.*, tk.*, tr.*, tu.*, ta.*
+            FROM tb_transaksi t
+            JOIN tb_kendaraan tk ON tk.id_kendaraan = t.id_kendaraan
+            JOIN tb_tarif tr ON tr.id_tarif = t.id_tarif
+            JOIN tb_user tu ON tu.id_user = t.id_user
+            JOIN tb_area_parkir ta ON ta.id_area = t.id_area
+            WHERE t.waktu_masuk BETWEEN :from AND :to
+            ORDER BY t.waktu_masuk DESC
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'from' => $from,
+            'to'   => $to
+        ]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

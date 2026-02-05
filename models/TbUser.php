@@ -11,7 +11,6 @@ class TbUser
         $this->pdo = $pdo;
     }
 
-    // Insert new user
     public function create(array $data): int
     {
         // Build SQL dynamically
@@ -26,37 +25,12 @@ class TbUser
         return (int) $this->pdo->lastInsertId();
     }
 
-    // Find user by ID
-    public function find(int $id): array|false
+    public function find(string $username): array|false
     {
-        $sql = "SELECT * FROM {$this->table} WHERE id = :id";
+        $sql = "SELECT * FROM {$this->table} WHERE username = :username";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute(['id' => $id]);
+        $stmt->execute(['username' => $username]);
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    // Update user
-    public function update(int $id, array $data): bool
-    {
-        $set = [];
-        foreach ($data as $key => $value) {
-            $set[] = "$key = :$key";
-        }
-
-        $sql = "UPDATE {$this->table} SET " . implode(', ', $set) . " WHERE id = :id";
-        $stmt = $this->pdo->prepare($sql);
-
-        $data['id'] = $id;
-        return $stmt->execute($data);
-    }
-
-    // Delete user
-    public function delete(int $id): bool
-    {
-        $sql = "DELETE FROM {$this->table} WHERE id = :id";
-        $stmt = $this->pdo->prepare($sql);
-
-        return $stmt->execute(['id' => $id]);
     }
 }
